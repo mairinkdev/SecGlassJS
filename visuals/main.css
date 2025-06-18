@@ -1,0 +1,367 @@
+/**
+ * SecGlassJS - Estilos principais
+ * Design "liquid glass" para o painel de ferramentas
+ */
+
+/* Estilos de reset e configurações globais */
+#secglass-root * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Definição de variáveis de cores */
+#secglass-root {
+    --bg-color: #121212;
+    --primary-color: #5e35b1;
+    --secondary-color: #42a5f5;
+    --text-color: #e0e0e0;
+    --glass-bg: rgba(30, 30, 30, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: rgba(0, 0, 0, 0.3);
+    --accent-color: #7c4dff;
+}
+
+/* Painel principal */
+#secglass-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 350px;
+    height: 600px;
+    background: rgba(30, 30, 30, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 15px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 8px 32px var(--glass-shadow);
+    color: var(--text-color);
+    z-index: 999999;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+#secglass-panel.hidden {
+    transform: translateX(110%);
+    opacity: 0;
+}
+
+/* Cabeçalho do painel */
+#secglass-header {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+#secglass-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+#secglass-close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-color);
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+#secglass-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+/* Barra de pesquisa */
+#secglass-search {
+    padding: 15px;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+#secglass-search input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+#secglass-search input:focus {
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.2);
+}
+
+/* Área de ferramentas */
+#secglass-tools {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+#secglass-tools::-webkit-scrollbar {
+    width: 6px;
+}
+
+#secglass-tools::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#secglass-tools::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+.secglass-tool-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    border-radius: 10px;
+    color: var(--text-color);
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+    transition: all 0.2s;
+}
+
+.secglass-tool-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.secglass-tool-button i {
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+.secglass-tool-button .tool-name {
+    font-weight: 500;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.secglass-tool-button .tool-desc {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* Rodapé */
+#secglass-footer {
+    padding: 12px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.2);
+    border-top: 1px solid var(--glass-border);
+}
+
+#secglass-footer a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#secglass-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Container de ferramentas */
+#secglass-tool-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 900px;
+    height: 80vh;
+    background: rgba(30, 30, 30, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4);
+    z-index: 999998;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: secglass-tool-appear 0.3s ease-out;
+}
+
+@keyframes secglass-tool-appear {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%) scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+#secglass-tool-header {
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+#secglass-tool-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+#secglass-tool-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-color);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+#secglass-tool-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#secglass-tool-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#secglass-tool-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+#secglass-tool-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#secglass-tool-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+/* Loading e mensagens */
+.tool-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+    padding: 40px;
+}
+
+.tool-loading i {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: var(--secondary-color);
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.error-message {
+    background: rgba(255, 0, 0, 0.1);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.error-message i {
+    color: #ff6b6b;
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.error-message h3 {
+    margin-bottom: 10px;
+    color: #ff6b6b;
+}
+
+/* Overlay de fundo */
+.secglass-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 999997;
+    display: none;
+    animation: secglass-fade-in 0.2s ease-out;
+}
+
+@keyframes secglass-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    #secglass-panel {
+        width: 300px;
+        height: 500px;
+    }
+
+    #secglass-tool-container {
+        width: 95%;
+        height: 90vh;
+    }
+}

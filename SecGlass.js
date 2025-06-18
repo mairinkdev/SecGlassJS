@@ -20,10 +20,12 @@
                 const scriptURL = new URL(currentScript.src);
                 return `${scriptURL.protocol}//${scriptURL.host}${scriptURL.pathname.substring(0, scriptURL.pathname.lastIndexOf('/') + 1)}`;
             }
-            return window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+            // Quando executado via console ou como string literal, não há script atual
+            // Neste caso, usar uma URL base padrão ou GitHub como fallback
+            return 'https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/';
         })(),
         version: '1.0.0',
-        debug: false
+        debug: true // Habilitando logs para debug
     };
 
     const logger = {
@@ -91,19 +93,21 @@
     async function loadVisualResources() {
         logger.info('Carregando recursos visuais...');
 
-        await resources.loadCSS('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+        try {
+            await resources.loadCSS('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+            logger.info('Font Awesome carregado com sucesso');
+        } catch (err) {
+            logger.error(`Erro ao carregar Font Awesome: ${err.message}`);
+        }
 
-        const mainCSS = await fetch(`${config.baseURL}visuals/main.css`)
-            .then(res => res.text())
-            .catch(err => {
-                logger.error(`Falha ao carregar CSS principal: ${err.message}`);
-                return createInlineCSS();
-            });
-
+        // Em vez de tentar carregar o CSS externo, vamos usar diretamente o CSS inline
+        logger.info('Carregando CSS embutido...');
+        const mainCSS = createInlineCSS();
         const style = document.createElement('style');
         style.id = 'secglass-styles';
         style.textContent = mainCSS;
         document.head.appendChild(style);
+        logger.info('CSS embutido aplicado com sucesso');
     }
 
     function createInlineCSS() {
@@ -158,10 +162,63 @@
                 -webkit-text-fill-color: transparent;
             }
 
+            #secglass-close-btn {
+                background: rgba(255, 255, 255, 0.1);
+                border: none;
+                color: #e0e0e0;
+                width: 30px;
+                height: 30px;
+                border-radius: 15px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+            }
+
+            #secglass-close-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            #secglass-search {
+                padding: 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            #secglass-search input {
+                width: 100%;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                padding: 10px 15px;
+                color: #e0e0e0;
+                font-size: 0.9rem;
+                outline: none;
+                transition: all 0.2s;
+            }
+
+            #secglass-search input:focus {
+                border-color: rgba(255, 255, 255, 0.2);
+                box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.2);
+            }
+
             #secglass-tools {
                 flex: 1;
                 overflow-y: auto;
                 padding: 10px;
+            }
+
+            #secglass-tools::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            #secglass-tools::-webkit-scrollbar-track {
+                background: transparent;
+            }
+
+            #secglass-tools::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 3px;
             }
 
             .secglass-tool-button {
@@ -190,6 +247,17 @@
                 font-size: 1rem;
                 width: 20px;
                 text-align: center;
+            }
+
+            .secglass-tool-button .tool-name {
+                font-weight: 500;
+                display: block;
+                margin-bottom: 3px;
+            }
+
+            .secglass-tool-button .tool-desc {
+                font-size: 0.8rem;
+                opacity: 0.7;
             }
 
             #secglass-footer {
@@ -269,6 +337,50 @@
                 z-index: 999997;
                 display: none;
             }
+
+            /* Estilos adicionados da main.css */
+            .tool-loading {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                height: 100%;
+                padding: 40px;
+            }
+
+            .tool-loading i {
+                font-size: 2rem;
+                margin-bottom: 15px;
+                color: #42a5f5;
+                animation: spin 1.5s linear infinite;
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            .error-message {
+                background: rgba(255, 0, 0, 0.1);
+                border-radius: 10px;
+                padding: 20px;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .error-message i {
+                color: #ff6b6b;
+                font-size: 2rem;
+                margin-bottom: 15px;
+            }
+
+            .error-message h3 {
+                margin-bottom: 10px;
+                color: #ff6b6b;
+            }
         `;
     }
 
@@ -338,45 +450,90 @@
     async function loadTools() {
         logger.info('Carregando ferramentas...');
 
+        // Incluindo apenas a ferramenta que temos implementada diretamente
         state.tools = [
             {
                 id: 'ipinfo',
                 name: 'IP Info',
                 description: 'Consulta informações detalhadas sobre endereços IP',
                 icon: 'fa-globe',
-                path: `${config.baseURL}tools/ipinfo.js`
-            },
-            {
-                id: 'reverseshell',
-                name: 'Reverse Shell Generator',
-                description: 'Gera comandos para conexões reversas',
-                icon: 'fa-terminal',
-                path: `${config.baseURL}tools/reverseshell.js`
-            },
-            {
-                id: 'xss',
-                name: 'XSS Payload Launcher',
-                description: 'Biblioteca de payloads para testes XSS',
-                icon: 'fa-code',
-                path: `${config.baseURL}tools/xss.js`
-            },
-            {
-                id: 'headers',
-                name: 'HTTP Header Scanner',
-                description: 'Analisa cabeçalhos HTTP de segurança',
-                icon: 'fa-shield-alt',
-                path: `${config.baseURL}tools/headers.js`
-            },
-            {
-                id: 'subfinder',
-                name: 'Subdomain Finder',
-                description: 'Descobre subdomínios de um domínio alvo',
-                icon: 'fa-sitemap',
-                path: `${config.baseURL}tools/subfinder.js`
+                inlineScript: `
+            (function (tool) {
+                // Renderiza a interface básica da ferramenta
+                tool.container.innerHTML = \`
+                    <div style="text-align: center; padding: 20px;">
+                        <h2>IP Info</h2>
+                        <p>Ferramenta para consulta de informações sobre IPs</p>
+                        <div style="margin: 20px 0;">
+                            <input type="text" id="ipInput" placeholder="Digite um IP ou domínio"
+                                style="padding: 10px; width: 70%; border-radius: 4px; border: 1px solid #ccc; margin-right: 10px;">
+                            <button id="lookupBtn"
+                                style="padding: 10px 15px; background: #5e35b1; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                Consultar
+                            </button>
+                        </div>
+                        <div id="ipResult" style="margin-top: 20px; text-align: left;"></div>
+                    </div>
+                \`;
+
+                // Adiciona event listeners
+                const ipInput = document.getElementById('ipInput');
+                const lookupBtn = document.getElementById('lookupBtn');
+                const ipResult = document.getElementById('ipResult');
+
+                lookupBtn.addEventListener('click', () => {
+                    const ip = ipInput.value.trim();
+                    if (!ip) return;
+
+                    ipResult.innerHTML = '<div style="text-align: center;"><i class="fas fa-spinner fa-spin"></i> Consultando...</div>';
+
+                    // Faz a consulta usando a API ipinfo.io
+                    fetch(\`https://ipinfo.io/\${ip}/json\`)
+                        .then(response => response.json())
+                        .then(data => {
+                            let html = '<div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">';
+
+                            if (data.error) {
+                                html = \`<div style="color: #ff6b6b; text-align: center;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <h3>Erro</h3>
+                                    <p>\${data.error.title || 'Erro ao consultar IP'}</p>
+                                </div>\`;
+                            } else {
+                                html += \`
+                                    <h3>\${data.ip}</h3>
+                                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                                        \${data.hostname ? \`<tr><td style="padding: 8px 0; opacity: 0.7;">Hostname</td><td>\${data.hostname}</td></tr>\` : ''}
+                                        \${data.city ? \`<tr><td style="padding: 8px 0; opacity: 0.7;">Localização</td><td>\${data.city}, \${data.region}</td></tr>\` : ''}
+                                        \${data.country ? \`<tr><td style="padding: 8px 0; opacity: 0.7;">País</td><td>\${data.country}</td></tr>\` : ''}
+                                        \${data.loc ? \`<tr><td style="padding: 8px 0; opacity: 0.7;">Coordenadas</td><td>\${data.loc}</td></tr>\` : ''}
+                                        \${data.org ? \`<tr><td style="padding: 8px 0; opacity: 0.7;">Organização</td><td>\${data.org}</td></tr>\` : ''}
+                                        \${data.postal ? \`<tr><td style="padding: 8px 0; opacity: 0.7;">Código Postal</td><td>\${data.postal}</td></tr>\` : ''}
+                                        \${data.timezone ? \`<tr><td style="padding: 8px 0; opacity: 0.7;">Fuso Horário</td><td>\${data.timezone}</td></tr>\` : ''}
+                                    </table>
+                                \`;
+                            }
+
+                            html += '</div>';
+                            ipResult.innerHTML = html;
+                        })
+                        .catch(error => {
+                            ipResult.innerHTML = \`
+                                <div style="color: #ff6b6b; text-align: center; background: rgba(255,0,0,0.1); padding: 15px; border-radius: 8px;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <h3>Erro ao consultar</h3>
+                                    <p>\${error.message}</p>
+                                </div>
+                            \`;
+                        });
+                });
+            })
+        `
             }
         ];
 
         renderToolButtons();
+        logger.info('Ferramentas carregadas');
     }
 
     function renderToolButtons() {
@@ -415,34 +572,61 @@
         document.getElementById('secglass-tool-container').style.display = 'flex';
         document.querySelector('.secglass-overlay').style.display = 'block';
 
-        fetch(tool.path)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Erro ao carregar ferramenta: ${response.status}`);
-                }
-                return response.text();
-            })
-            .then(scriptText => {
-                const toolInterface = {
-                    container: contentContainer,
-                    name: tool.name,
-                    id: tool.id
-                };
+        try {
+            if (tool.inlineScript) {
+                // Usar o script inline em vez de carregar do arquivo
+                setTimeout(() => {
+                    const toolInterface = {
+                        container: contentContainer,
+                        name: tool.name,
+                        id: tool.id
+                    };
 
-                const scriptFunction = new Function('tool', scriptText);
-                contentContainer.innerHTML = '';
-                scriptFunction(toolInterface);
-            })
-            .catch(error => {
-                contentContainer.innerHTML = `
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Erro ao carregar ferramenta</h3>
-                        <p>${error.message}</p>
-                    </div>
-                `;
-                logger.error(`Falha ao carregar ferramenta ${tool.id}: ${error.message}`);
-            });
+                    const scriptFunction = new Function('tool', tool.inlineScript);
+                    contentContainer.innerHTML = '';
+                    scriptFunction(toolInterface);
+                }, 300); // Pequeno atraso para mostrar o loading
+            } else {
+                // Fallback para carregamento via URL (caso implementado no futuro)
+                fetch(`${config.baseURL}tools/${tool.id}.js`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Erro ao carregar ferramenta: ${response.status}`);
+                        }
+                        return response.text();
+                    })
+                    .then(scriptText => {
+                        const toolInterface = {
+                            container: contentContainer,
+                            name: tool.name,
+                            id: tool.id
+                        };
+
+                        const scriptFunction = new Function('tool', scriptText);
+                        contentContainer.innerHTML = '';
+                        scriptFunction(toolInterface);
+                    })
+                    .catch(error => {
+                        contentContainer.innerHTML = `
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>Erro ao carregar ferramenta</h3>
+                                <p>${error.message}</p>
+                            </div>
+                        `;
+                        logger.error(`Falha ao carregar ferramenta ${tool.id}: ${error.message}`);
+                    });
+            }
+        } catch (error) {
+            contentContainer.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Erro ao executar ferramenta</h3>
+                    <p>${error.message}</p>
+                </div>
+            `;
+            logger.error(`Erro ao executar ferramenta ${tool.id}: ${error.message}`);
+        }
     }
 
     function closeActiveTool() {
@@ -456,6 +640,7 @@
 
         try {
             logger.info('Inicializando SecGlassJS...');
+            logger.info(`URL base: ${config.baseURL}`);
 
             await loadVisualResources();
 
@@ -467,6 +652,7 @@
             logger.info('SecGlassJS inicializado com sucesso');
         } catch (error) {
             logger.error(`Falha na inicialização: ${error.message}`);
+            console.error(error);
         }
     }
 
@@ -479,5 +665,55 @@
     window.SecGlassJS = {
         toggle: togglePanel,
         version: config.version
+    };
+
+    // Incorporar utilitários básicos diretamente
+    window.SecGlassUtils = {
+        showToast: function (message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.background = 'rgba(30, 30, 30, 0.9)';
+            toast.style.color = 'white';
+            toast.style.padding = '15px';
+            toast.style.borderRadius = '10px';
+            toast.style.zIndex = '9999999';
+            toast.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.3)';
+            toast.style.backdropFilter = 'blur(10px)';
+            toast.style.minWidth = '250px';
+
+            const color = type === 'error' ? '#ff5252' : type === 'success' ? '#66bb6a' : '#42a5f5';
+
+            toast.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}" style="color: ${color}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+
+            return toast;
+        },
+
+        copyToClipboard: function (text) {
+            return navigator.clipboard.writeText(text)
+                .then(() => {
+                    this.showToast('Copiado para a área de transferência!', 'success');
+                    return true;
+                })
+                .catch(err => {
+                    this.showToast('Erro ao copiar texto', 'error');
+                    console.error('Erro ao copiar:', err);
+                    throw err;
+                });
+        }
     };
 })();

@@ -17,50 +17,38 @@ Um painel de ferramentas de segurança ofensiva em JavaScript com design moderno
 
 ### Ferramentas Incluídas
 
-- **IP Info**: Consulta detalhada sobre endereços IP
-- **Reverse Shell Generator**: Comandos para conexões reversas
-- **XSS Payload Launcher**: Biblioteca de payloads para testes XSS
-- **HTTP Header Scanner**: Análise de cabeçalhos HTTP de segurança
-- **Subdomain Finder**: Descobre subdomínios de um domínio alvo
+- **IP Info**: Consulta informações detalhadas sobre endereços IP
 
 ### Como Usar
 
-#### Método 1: Bookmarklet (Recomendado)
+#### Método 1: Bookmarklet
 
-1. Crie um novo favorito no seu navegador
-2. Dê um nome (ex: "SecGlassJS")
-3. No campo URL, cole o seguinte código:
+Adicione um novo favorito no seu navegador com a seguinte URL:
 
-```javascript
-javascript:fetch("https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js").then(t=>t.text()).then(eval);
 ```
-
-4. Salve o favorito
-5. Em qualquer site, clique no favorito para ativar o SecGlassJS
+javascript:fetch('https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js').then(r=>r.text()).then(eval);
+```
 
 #### Método 2: Console do Navegador
 
-1. Abra o console do navegador (F12 ou Ctrl+Shift+I)
-2. Cole o seguinte comando:
+Abra o console do navegador (F12) e cole o seguinte comando:
 
 ```javascript
-fetch("https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js").then(t=>t.text()).then(eval);
+fetch('https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js').then(r=>r.text()).then(eval);
 ```
-
-3. Pressione Enter para executar
 
 ### Estrutura do Projeto
 
 ```
-/SecGlassJS
-├── SecGlass.js         # Script principal para injeção
-├── SecGlass.min.js     # Versão minificada para uso como bookmarklet
-├── /visuals/           # Recursos visuais
-│   └── main.css        # Estilos principais
-├── /functions/         # Funções utilitárias
-│   └── utils.js        # Utilitários comuns
-└── /tools/             # Ferramentas individuais
-    └── ipinfo.js       # Ferramenta de consulta de IPs
+SecGlassJS/
+├── SecGlass.js           # Script principal completo
+├── SecGlass.min.js       # Versão minificada para bookmarklet
+├── visuals/
+│   └── main.css          # Estilos embutidos no script principal
+├── functions/
+│   └── utils.js          # Utilitários embutidos no script principal
+└── tools/
+    └── ipinfo.js         # Ferramenta IP Info (funcionalidade embutida no script principal)
 ```
 
 ### Licença
@@ -90,49 +78,37 @@ A JavaScript offensive security tools panel with modern "liquid glass" design. L
 ### Included Tools
 
 - **IP Info**: Detailed query about IP addresses
-- **Reverse Shell Generator**: Commands for reverse connections on various platforms
-- **XSS Payload Launcher**: Payload library for Cross-Site Scripting tests
-- **HTTP Header Scanner**: Security HTTP header analysis
-- **Subdomain Finder**: Discovers subdomains of a target domain
 
 ### How to Use
 
-#### Method 1: Bookmarklet (Recommended)
+#### Method 1: Bookmarklet
 
-1. Create a new bookmark in your browser
-2. Give it a name (ex: "SecGlassJS")
-3. In the URL field, paste the following code:
+Add a new bookmark in your browser with the following URL:
 
-```javascript
-javascript:fetch("https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js").then(t=>t.text()).then(eval);
 ```
-
-4. Save the bookmark
-5. On any site, click the bookmark to activate SecGlassJS
+javascript:fetch('https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js').then(r=>r.text()).then(eval);
+```
 
 #### Method 2: Browser Console
 
-1. Open the browser console (F12 or Ctrl+Shift+I)
-2. Paste the following command:
+Open the browser console (F12) and paste the following command:
 
 ```javascript
-fetch("https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js").then(t=>t.text()).then(eval);
+fetch('https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js').then(r=>r.text()).then(eval);
 ```
-
-3. Press Enter to execute
 
 ### Project Structure
 
 ```
-/SecGlassJS
-├── SecGlass.js         # Main injection script
-├── SecGlass.min.js     # Minified version for bookmarklet use
-├── /visuals/           # Visual resources
-│   └── main.css        # Main styles
-├── /functions/         # Utility functions
-│   └── utils.js        # Common utilities
-└── /tools/             # Individual tools
-    └── ipinfo.js       # IP lookup tool
+SecGlassJS/
+├── SecGlass.js           # Complete main script
+├── SecGlass.min.js       # Minified version for bookmarklet
+├── visuals/
+│   └── main.css          # Styles embedded in the main script
+├── functions/
+│   └── utils.js          # Utilities embedded in the main script
+└── tools/
+    └── ipinfo.js         # IP Info tool (functionality embedded in the main script)
 ```
 
 ### License
@@ -149,62 +125,50 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 中文
 
-SecGlassJS 是一个具有现代"液态玻璃"设计的 JavaScript 攻击性安全工具面板。轻量级、快速且视觉上吸引人，为开发人员和初学者提供有用的工具。
+具有现代"液态玻璃"设计的JavaScript攻击性安全工具面板。轻量级、快速且视觉上具有吸引力，为开发人员和初学者渗透测试人员提供有用的工具。
 
 ### 功能
 
-- 带有磨砂玻璃效果的现代界面 (玻璃态设计)
+- 采用磨砂玻璃效果(glassmorphism)的现代界面
 - 动态工具加载
-- 键盘快捷键 `Ctrl+K` 打开/关闭面板
+- 键盘快捷键`Ctrl+K`打开/关闭面板
 - 模块化和可扩展结构
-- 可以通过单个命令注入到任何页面中
+- 可以通过单个命令注入到任何页面
 
 ### 包含的工具
 
-- **IP 信息**: 关于 IP 地址的详细查询
-- **反向 Shell 生成器**: 在各种平台上进行反向连接的命令
-- **XSS 有效载荷启动器**: 用于跨站脚本测试的有效载荷库
-- **HTTP 标头扫描器**: 安全 HTTP 标头分析
-- **子域名查找器**: 发现目标域的子域名
+- **IP信息**：查询关于IP地址的详细信息
 
-### 如何使用
+### 使用方法
 
-#### 方法 1: 书签小工具 (推荐)
+#### 方法1：书签工具
 
-1. 在浏览器中创建一个新书签
-2. 给它一个名称 (例如: "SecGlassJS")
-3. 在 URL 字段中，粘贴以下代码:
+在您的浏览器中添加一个具有以下URL的新书签：
 
-```javascript
-javascript:fetch("https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js").then(t=>t.text()).then(eval);
+```
+javascript:fetch('https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js').then(r=>r.text()).then(eval);
 ```
 
-4. 保存书签
-5. 在任何网站上，点击书签激活 SecGlassJS
+#### 方法2：浏览器控制台
 
-#### 方法 2: 浏览器控制台
-
-1. 打开浏览器控制台 (F12 或 Ctrl+Shift+I)
-2. 粘贴以下命令:
+打开浏览器控制台(F12)并粘贴以下命令：
 
 ```javascript
-fetch("https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js").then(t=>t.text()).then(eval);
+fetch('https://raw.githubusercontent.com/mairinkdev/SecGlassJS/main/SecGlass.min.js').then(r=>r.text()).then(eval);
 ```
-
-3. 按 Enter 键执行
 
 ### 项目结构
 
 ```
-/SecGlassJS
-├── SecGlass.js         # 主注入脚本
-├── SecGlass.min.js     # 用于书签工具的压缩版本
-├── /visuals/           # 视觉资源
-│   └── main.css        # 主要样式
-├── /functions/         # 实用函数
-│   └── utils.js        # 通用实用程序
-└── /tools/             # 单独工具
-    └── ipinfo.js       # IP 查询工具
+SecGlassJS/
+├── SecGlass.js           # 完整主脚本
+├── SecGlass.min.js       # 书签工具的精简版本
+├── visuals/
+│   └── main.css          # 主脚本中嵌入的样式
+├── functions/
+│   └── utils.js          # 主脚本中嵌入的实用程序
+└── tools/
+    └── ipinfo.js         # IP信息工具（功能嵌入在主脚本中）
 ```
 
 ### 许可证
